@@ -1,0 +1,364 @@
+\documentclass[11pt]{article}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{amsmath,amsbsy,amsfonts,amssymb,amsthm,commath}
+\usepackage[round]{natbib}
+\usepackage{hyperref}
+
+% math font macros
+
+\def\ddefloop#1{\ifx\ddefloop#1\else\ddef{#1}\expandafter\ddefloop\fi}
+% Blackboard fonts: \bbA, \bbB, ...
+\def\ddef#1{\expandafter\def\csname bb#1\endcsname{\ensuremath{\mathbb{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+% Calligraphic fonts: \cA, \cB, ...
+\def\ddef#1{\expandafter\def\csname c#1\endcsname{\ensuremath{\mathcal{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+% Bold fonts (for vectors, matrices, etc.): \vA, \vB, ..., \va, \vb, ...
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\ddefloop
+% Bold fonts (for vectors, matrices, etc.): \valpha, \vbeta, ...,  \vGamma, \vDelta, ...,
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{\csname #1\endcsname}}}}
+\ddefloop {alpha}{beta}{gamma}{delta}{epsilon}{varepsilon}{zeta}{eta}{theta}{vartheta}{iota}{kappa}{lambda}{mu}{nu}{xi}{pi}{varpi}{rho}{varrho}{sigma}{varsigma}{tau}{upsilon}{phi}{varphi}{chi}{psi}{omega}{Gamma}{Delta}{Theta}{Lambda}{Xi}{Pi}{Sigma}{varSigma}{Upsilon}{Phi}{Psi}{Omega}{ell}\ddefloop
+
+% other macros
+
+\newcommand\ip[1]{\langle #1 \rangle} % inner product
+\newcommand{\E}{\ensuremath{\mathbb{E}}} % expectation
+\renewcommand{\P}{\ensuremath{\mathbb{P}}} % probability
+\newcommand{\var}{\ensuremath{\operatorname{var}}} % variance
+\newcommand{\vol}{\ensuremath{\operatorname{vol}}} % volume
+\newcommand{\unitball}[1][d]{\ensuremath{B^{#1}}} % unit ball
+\newcommand{\unitsphere}[1][d-1]{\ensuremath{S^{#1}}} % unit sphere
+\newcommand{\logmgf}[1]{\ensuremath{\psi_{#1}}} % log mgf
+\newcommand{\Normal}{\ensuremath{\operatorname{N}}} % normal distribution
+
+% environments
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\theoremstyle{definition}
+\newtheorem{problem}{Problem}
+\newenvironment{solution}{\noindent\emph{Solution.}}{\hfill$\square$}
+
+%-------------------------------------------------------------------------------
+
+\title{COMS 4772 Fall 2016 Homework 1}
+\author{Si Kai Lee, sl3950}
+\date{}
+
+%-------------------------------------------------------------------------------
+
+\begin{document}
+\maketitle
+
+\begin{problem}[25 points]
+  In this problem, ``volume'' refers to $(d-1)$-dimensional volume (or ``surface area'' in $d$-dimensions).
+  \begin{enumerate}
+    \item[(a)]
+      Prove that there is a constant $C>0$ (not depending on $d$) such that, for any set $T \subset \unitsphere$ of $|T|=d^{100}$ unit vectors, the set
+      \begin{equation*}
+        \bigcap_{\vu \in T}
+        \cbr{
+          \vx \in \unitsphere : \abs{\ip{\vu,\vx}} \leq C\sqrt{\frac{\ln d}{d}}
+        }
+      \end{equation*}
+      accounts for $99\%$ of the volume of $\unitsphere$.
+      (Assume $d\geq2$ so $\ln(d) > 0$.)
+
+    \item[(b)]
+      Prove that there is a constant $c>0$ (not depending on $d$) such that, for any $\vu \in \unitsphere$, the set
+      \begin{equation*}
+        \cbr{
+          \vx \in \unitsphere : \abs{\ip{\vu,\vx}} > \frac{c}{\sqrt{d}}
+        }
+      \end{equation*}
+      accounts for $99\%$ of the volume of $\unitsphere$.
+
+  \end{enumerate}
+\end{problem}
+
+\begin{solution}
+\\ \\a)
+Let $Y_{\epsilon} = \cbr{\vx \in \unitsphere : \abs{\ip{\vu,\vx}} \leq \epsilon}$. By definition, $ \bigcap_{\vu \in T} Y_{\epsilon} = \unitsphere \setminus \bigcup_{\vu \in T} (\unitsphere \setminus Y_{\epsilon})$. By applying the union bound on $\bigcup_{\vu \in T} (\unitsphere \setminus Y_{\epsilon})$, we have the following inequality:
+\begin{align*}
+\vol((\bigcup_{\vu \in T} (\unitsphere \setminus Y_{\epsilon})) 
+&\leq \sum_{\vu \in T} \vol(\unitsphere \setminus Y_{\epsilon})
+\end{align*}
+Using the technique in the notes, we define $ \vol(\unitsphere \setminus Y_{\epsilon})$ as the points outside the 'tropics' which we define as $\bigcap_{\vu \in T} Y_{\epsilon}$, hence the volume of the points outside the 'tropics' are bounded by the inequality shown below
+\begin{align*}
+\sum_{\vu \in T} \vol(\unitsphere \setminus Y_{\epsilon}) 
+&\leq \sum_{\vu \in T}  2(1 - \epsilon^2)^{d/2} \vol(\unitsphere) \\
+&\leq \sum_{\vu \in T}  2e^{-\epsilon (d-1)/2}\vol(\unitsphere) \\
+&\leq d^{100} 2e^{-\epsilon^2 (d-1)/2}\vol(\unitsphere)
+\end{align*}
+Substituting the bound into the $\bigcap_{\vu \in T} Y_{\epsilon}$,  we have the following bound:
+\begin{align*}
+\bigcap_{\vu \in T} Y_{\epsilon} \geq (1 - d^{100} 2e^{-\epsilon^2 (d-1)/2}) \vol(\unitsphere)
+\end{align*}
+Since we want $\bigcap_{\vu \in T} Y_{\epsilon} = 0.99 \vol(\unitsphere)$, we construct the next equality demonstrating that:
+\begin{align*}
+(1 - d^{100} 2e^{-\epsilon^2 (d-1)/2}) \vol(\unitsphere) 
+&= 0.99 \vol(\unitsphere)\\
+100 \log d + \log 2 - \epsilon^2 \frac{d-1}{2} 
+&= \log 0.01\\
+200\log d + 2\log(2/0.01) 
+&= \epsilon^2 (d-1)\\
+200\log(d) + 2\log(200)
+&= \epsilon^2 d \textrm{ as when } d >>> 1, d - 1 \approx d  \\
+200\log(d) 
+&= \epsilon^2 d \textrm{ as when } d >>> 1, 200\log(d) \approx 200\log(d) + 2\log(200)  \\
+\sqrt(200)\sqrt(\log(d)/d) 
+&= \epsilon^2
+\end{align*}
+Therefore $C = \sqrt(200)$.
+\newline
+\\ b) Here, define $Z_\epsilon = \cbr{\vx \in \unitsphere : \abs{\ip{\vu,\vx}} > \epsilon}$ and refer to $Z_\epsilon$ as the set of points outside the 'tropics'. Using the approximation obtained from the notes, we have the following inequality:
+\begin{align*}
+\vol(Z_\epsilon) 
+&\leq 2(1 - \epsilon^2)^{d/2} \vol(\unitsphere) \\
+&\leq 2e^{-\epsilon^2 (d-1)/2} \vol(\unitsphere)
+\end{align*}
+We want $\vol(Z_\epsilon) = 0.99\vol(\unitsphere)$ so set the bound obtained previously equal to $0.99\vol(\unitsphere)$ to obtain:
+\begin{align*}
+2e^{-\epsilon^2 (d-1)/2} \vol(\unitsphere) 
+&= 0.99\vol(\unitsphere) \\
+\epsilon^2 (d-1)
+&= -2 \log 0.99 \\
+\epsilon^2 d
+&= -2 \log 0.99 \textrm{ as when } d >>> 1, d - 1 \approx d  \\
+\epsilon 
+&= \sqrt{\frac{-2 \log 0.99}{d}}
+\end{align*}
+Hence have $c = \sqrt{-2 \log 0.99}$.
+\end{solution}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{problem}[25 points]
+  Let $B_1^d := \cbr[0]{ \vx \in \bbR^d : \sum_{i=1}^d |x_i| \leq 1 }$ denote the $d$-dimensional \emph{cross polytope} (as explained in Ball's lecture notes).
+  \begin{enumerate}
+    \item[(a)]
+      Prove that $\unitball \subseteq \sqrt{d} B_1^d$.
+
+    \item[(b)]
+      Use the fact $\unitball \subseteq \sqrt{d} B_1^d$ to derive a bound on the volume of $\unitball$ of the form
+      \[
+        \vol(\unitball)
+        \ \leq \
+        c \cdot \del{ \frac{c'}{d} }^{d/2}
+      \]
+      for some positive constants $c, c' >0$.
+      Explain each step in your derivation.
+
+      \emph{Hint}: Stirling's approximation implies $\sqrt{2\pi} n^{n+1/2}e^{-n} \leq n! \leq n^{n+1/2}e^{1-n}$ for all $n \in \bbN$.
+  \end{enumerate}
+\end{problem}
+
+\begin{solution}
+\\ \\a) According to the notes, $\unitball := \cbr[0]{ \vx \in \bbR^d : \sum_{i=1}^d ||x_i||_2 \leq 1}$, so it follows that $(\unitball)^2 = \sum_{i=1}^d x_i^2$. We expand $(B_1^d)^2$ to obtain $\sum_{i=1}^d \sum_{j=1}^d |x_i| |x_j| = \sum_{i=1}^d x_i^2 + 2 \sum_{i \neq j} |x_i| |x_j|$. By comparing the above, we see that $\sum_{i=1}^d x_i^2 \leq \sum_{i=1}^d x_i^2 + 2 \sum_{i \neq j} |x_i| |x_j| |$ as the second term $\geq 0$ which shows $(\unitball)^2 \leq (B_1^d)^2$ as all terms are $\geq 0$. Multiplying the RHS with a constant $d$ that is $\geq 1$  and taking roots on both sides, the inequality remains valid as the squared values are $\geq 1$. Hence $\unitball \subseteq \sqrt{d} B_1^d$.
+\newline
+\\b) From part a), we know that $\unitball \subseteq \sqrt{d} B_1^d$. The result implies that $\vol(\unitball) \leq \vol{B^d_1}$. The volume of $B^d_1$ is $\frac{2^d}{d!}$.
+\begin{align*}
+\vol{\unitball} \leq \frac{2^d}{d!}
+\end{align*}
+Applying Stirling's approximation to the denominator and collecting relevant terms
+\begin{align*}
+\vol{\unitball} \leq \frac{2^d}{\sqrt{2\pi} d^{d+1/2} e^{-d}} = \frac{2^{d/2 + d/2} \cdot e^{d/2 + d/2} }{\sqrt{2\pi} d^{d+1/2}} = \frac{2^{d/2} \cdot e^{d/2}}{\sqrt{2\pi} d^{d}} \cdot \frac{2e}{d}^{d/2}
+\end{align*}
+As $d > 0$, we know all RHS terms are greater than 0. This gives us $c = \frac{2^{d/2} \cdot e^{d/2}}{\sqrt{2\pi} d^{d}}$ and $c' = 2e$.
+
+\end{solution}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{problem}[25 points]
+  Let $X$ be an $[a,b]$-valued random variable (i.e., $\P(X\in\intcc{a,b})=1$) with $\E(X) = 0$.
+  For simplicity, assume $X$ has a probability density function $f$.
+  In this problem, you will prove $\logmgf{X}(\lambda) \leq \lambda^2(b-a)^2/8$ using a technique due to \citet{McAllesterO03}.
+  \begin{enumerate}
+    \item[(a)]
+      Consider the family of density functions $\{ g_\lambda : \lambda \in \bbR \}$, where
+      \begin{align*}
+        g_\lambda(x) & \ := \ \frac{e^{\lambda x}}{\E e^{\lambda X}} f(x)
+        \quad \text{for all $x \in \bbR$} \,.
+      \end{align*}
+      Briefly verify that if $Y_\lambda \sim g_\lambda$, then
+      \begin{align*}
+        \E(Y_\lambda) & \ = \ \logmgf{X}'(\lambda)
+        \,,
+        \\
+        \var(Y_\lambda) & \ = \ \logmgf{X}''(\lambda)
+        \,,
+      \end{align*}
+      where $\logmgf{X}'$ is the first-derivative of $\logmgf{X}$, and $\logmgf{X}''$ is the second-derivative of $\logmgf{X}$.
+      (You don't need to write much at all for this part.)
+
+    \item[(b)]
+      Prove that any $[a,b]$-valued random variable has variance at most $(b-a)^2/4$.
+
+    \item[(c)]
+      The fundamental theorem of calculus implies
+      \begin{align*}
+        \logmgf{X}(\lambda)
+        & \ = \
+        \int_0^\lambda \int_0^\mu \logmgf{X}''(\gamma) \dif\gamma \dif\mu
+        \,.
+      \end{align*}
+      Use this identity and the results of parts (a) and (b) to prove that
+      $\logmgf{X}(\lambda) \leq \lambda^2 (b-a)^2/8$.
+
+  \end{enumerate}
+\end{problem}
+
+\begin{solution}
+\\ \\a)  We start by setting out $\E X $ and $\var X$ with $X \in [a, b]$:
+\begin{align*}
+\E Y_\lambda  &= \int_{a}^{b} x \frac{e^{\lambda x}}{\E e^{\lambda X}} f(x) dx\\
+\var Y_\lambda &= \E Y_\lambda^2  - (\E Y_\lambda)^2
+\end{align*}
+Have $\logmgf{X} \lambda = \log \E e^{\lambda x} = \int_{a}^{b} \log e^{\lambda x} f(x) dx$. Differentiate it twice:
+\begin{align*}
+\logmgf{X}'(\lambda) 
+&= \int_{a}^{b} \frac{d}{d \lambda} \log e^{\lambda x} f(x) dx \\
+&= \int_{a}^{b} \frac{xe^{\lambda x}}{\E e^{\lambda X}} f(x) dx = \E(Y_\lambda)\\
+\logmgf{X}''(\lambda) 
+&= \int_{a}^{b} \frac{d}{d \lambda} \frac{xe^{\lambda x}}{\E e^{\lambda X}} f(x) dx\\
+&= \int_{a}^{b} \frac{x^2 e^{\lambda x}}{\E e^{\lambda X}} f(x) dx - \int_{a}^{b} \frac{xe^{\lambda x}}{(\E e^{\lambda X})^2} f(x) dx *\int_{a}^{b} xe^{\lambda x} f(x) dx \\
+& = \E Y_\lambda^2 - (\int_{a}^{b} x \frac{e^{\lambda x}}{\E e^{\lambda X}} f(x) dx)^2 \textrm{ as } \E e^{\lambda X} \textrm{ is a constant}\\
+&= \E Y_\lambda^2 - (\E Y_\lambda)^2
+\end{align*}
+\newline
+\\ b) Suppose we have a distribution with support $\in [a, b]$ is that with $P(Z = a) = P(Z = b) = 0.5$. The above distribution has $\E(Z)  = \frac{a+b}{2}$ and $\E(Z^2) = \frac{a^2 + b^2}{2}$. Hence $\var(Z) = \frac{a^2 + b^2}{2} - (\frac{a+b}{2})^2 = \frac{2a^2 + 2b^2 - a^2 - b^2 - 2ab}{4} = \frac{a^2 + b^2 - 2ab}{4} = \frac{(b - a)^2 }{4}$. 
+
+To prove that the above distribution has the largest variance, we consider distributions with less concentrated point densities. If we take $0.5 \epsilon$ (where $\epsilon$ is some small number) away from $a$ and $b$ and place it at the point $\frac{a + b}{2}$, \var$(Z')$ of the new distribution $Z'$ decreases. This is due to $\min(X_i - \E X)  < \max(X_i - \E X) = \frac{b-a}{2}$ giving $\var(Z') = p(\max(X_i - \E X))^2 + (1-p)(\frac{b-a}{2})^2 \leq \var(Z) = (\frac{b-a}{2})^2$. Hence, as soon as we spread probability mass around to other discrete points, the variance $\frac{1}{n} \sum_{i=1}^n (X_i - \E X_i)^2$ deceases and will be $\leq \frac{(b -a)^2}{4}$. By continuing to spread probability mass to all $X \in [a, b]$ we end up with a continuous distribution $Z''$ with probability mass is even more diffuse than before so \var(Z'') will be even smaller than before. 
+
+In the case of having more mass on $b$ than $a$ in distribution $Z'''$, $\var(Z''') = p(b - (pb + (1-p)a))^2 + (1-p)(a - (pb + (1-p)a))^2$ where $p > 0.5 + \epsilon$. Expanding $\var{Z'''}$, we get
+\begin{align*}
+p(b - (pb + (1-p)a))^2 + (1-p)(a - (pb + (1-p)a))^2
+&= p((1-p)(b - a))^2 + (1-p)(p(a - b))^2 \\
+&= p(1-p)^2(b-a)^2 + (1-p)(-p)^2(b-a)^2 \\
+&= (p - 2p^2 + p^3 + p^2 - p^3)(b-a)^2 \\
+&= p(1-p)(b-a)^2
+\end{align*}
+Since we know that the max for $p(1-p)$ is $1/4$ when $p = 0.5$, therefore the variance of any distribution of point masses on $a$ and $b$ is $\leq \frac{(b - a)^2 }{4}$.
+ 
+Therefore, we can see that any $[a,b]$-valued random variable has variance at most $(b-a)^2/4$.
+\newline
+\\ c) Substituting the results from a) and b) into $\logmgf{X}{\lambda} = \int_0^\lambda \int_0^\mu \logmgf{X}''(\gamma) \dif\gamma \dif\mu$, we have:
+\begin{align*}
+\logmgf{X}(\lambda)
+&= \int_0^\lambda \int_0^{\lambda} \logmgf{X}''(\gamma) \dif\gamma \dif\mu \\
+&\leq \int_0^\lambda \int_0^{\lambda} \frac{(b-a)^2}{4} \dif\gamma \dif\mu \\
+&\leq \int_0^\lambda \lambda \frac{(b-a)^2}{4}) \dif\gamma \\
+&\leq \lambda^2 \frac{(b-a)^2}{8}
+\end{align*}
+\end{solution}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{problem}[25 points]
+  Let $\vU$ be a random unit vector with the uniform density on $\unitsphere$, and let $X := \ip{\vv,\vU}$, where $\vv$ is a fixed unit vector in
+  $\unitsphere$.
+  \begin{enumerate}
+    \item[(a)]
+      Prove that $\logmgf{X^2-\E(X^2)}(\lambda) \leq \logmgf{Z^2-1}(\lambda/d)$
+      for all $\lambda \in \bbR$, where $Z \sim \Normal(0,1)$.
+
+      \emph{Hint}: You may use the fact that if $Y_d \sim \chi^2(d)$ and $\vU$ are independent, then $\sqrt{Y_d}\vU \sim \Normal(\boldsymbol0,\vI)$ (standard multivariate Gaussian in $\bbR^d$).
+      Jensen's inequality may also be useful.
+
+    \item[(b)]
+      Use the result of part (a) to derive a tail bound for $\abs{X^2-\E(X^2)}$.
+      Explain each step in your derivation.
+
+  \end{enumerate}
+\end{problem}
+
+\begin{solution}
+% Put solution here.
+\end{solution}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{problem}[25 points]
+  Let $\Phi \colon \bbR \to [0,1]$ denote the cumulative distribution function for $\Normal(0,1)$, i.e., $\Phi(t) = \P(Z \leq t)$ where $Z \sim \Normal(0,1)$.
+  Prove that for any $d \in \bbN$, if
+  \begin{enumerate}
+    \item $X_1, X_2, \dotsc, X_d$ are independent random variables;
+
+    \item $\E X_i = 0$ and $\E X_i^2 = 1$ for all $i\in[d]$;
+
+  \end{enumerate}
+  then for a $1-o(1)$ fraction of unit vectors $\vu \in \unitsphere$, the random vector $\vX = (X_1,X_2,\dotsc,X_d)$ satisfies
+  \begin{equation*}
+    \sup_{t \in \bbR}
+    \abs{ \P\del{ \ip{\vu,\vX} \leq t } - \Phi(t) }
+    \ \leq \
+    O\del{ \frac{\rho}{d^{0.49}} }
+    \,,
+  \end{equation*}
+  where $\rho := \max_{i\in[d]} \E |X_i|^3$.
+
+  You can use the following theorem (which you do not need to prove):
+  \begin{center}
+    \framebox[0.9\textwidth]{%
+      \begin{minipage}{0.88\textwidth}
+        \begin{theorem}[Berry-Ess\'een theorem]
+          \label{thm:clt}
+          There is an absolute positive constant $C>0$ such that the
+          following holds.
+          Let $Y_1, Y_2, \dotsc, Y_n$ be independent random variables
+          with $\E Y_i = 0$, $\sigma_i^2 := \E Y_i^2 < \infty$.
+          Define $v_n := \sum_{i=1}^n \sigma_i^2$ and $\rho_n :=
+          \sum_{i=1}^n \E|Y_i|^3$.
+          Then
+          \begin{equation*}
+            \sup_{t \in \bbR}
+            \abs{
+              \P\del{
+                \frac{Y_1 + Y_2 + \dotsb + Y_n}{\sqrt{v_n}} \leq t
+              }
+              - \Phi(t)
+            }
+            \ \leq \
+            \frac{C\rho_n}{v_n^{3/2}}
+            \,.
+          \end{equation*}
+        \end{theorem}
+      \end{minipage}%
+    }
+  \end{center}
+\end{problem}
+
+\begin{solution}
+\\ \\
+We compare $ \sup_{t \in \bbR} \abs{ \P\del{ \ip{\vu,\vX} \leq t } - \Phi(t) }\ \leq \ O\del{ \frac{\rho}{d^{0.49}} }$ and Berry-Ess\'een and observe that they are the same apart from the inner probability terms and the bounds.  We can use Berry-Ess\'een to prove the above inequality if the theorem's assumptions holds. 
+
+Since we know $\vX$ that are independent random variables and $\vu$ is a fixed unit vector, hence the inner product of the two are also independent random variables. If we let $Y_i$ be the inner product of $\vu$ and $\vX$, $\E Y_i = \E[u^T X_i] = u^T \E X_i = 0$ and $\E Y_i^2 = \E[u^T X_i^T X_i u^T] = u^2 \E[X^2] = 1 * 1 = 1$ ($u^T u = 1$ since $u$ is a unit vector). Armed with the above facts, we know that $\langle  \vu, \vX \rangle$ is a valid $Y_i$ as it fulfils all the assumptions required for Berry-Ess\'een to hold.
+
+By definition, we have $v_n = \sum_{i=1}^{d} 1 = d$ and $\rho_n =  \sum_{i=1}^n \E|Y_i|^3 \leq d \max_{i\in[d]} \E |X_i|^3$. Therefore $\frac{C\rho_n}{v_n^{3/2}} = \frac{d \rho}{d^{3/2}} = \frac{\rho}{d^{1/2}} = O(\frac{\rho}{d^{0.49}})$ which proves $ \sup_{t \in \bbR} \abs{ \P\del{ \ip{\vu,\vX} \leq t } - \Phi(t) }\ \leq \ O\del{ \frac{\rho}{d^{0.49}} }$
+
+
+
+\end{solution}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{thebibliography}{1}
+  \bibitem[McAllester and Ortiz(2003)]{McAllesterO03}
+  D.~McAllester and L.~Ortiz.
+  \newblock Concentration inequalities for the missing mass and for histogram rule error.
+  \newblock \emph{Journal of Machine Learning Research}, 4(Oct):895--911, 2003.
+\end{thebibliography}
+
+\end{document}
