@@ -1,0 +1,18 @@
+\begin{thebibliography}{1}
+
+\bibitem{kawaguchi2016deep}
+Kenji Kawaguchi.
+\newblock {D}eep {L}earning without {P}oor {L}ocal {M}inima.
+\newblock {\em arXiv preprint arXiv:1605.07110}, 2016.
+
+\bibitem{ge2016matrix}
+Rong Ge, Jason~D Lee, and Tengyu Ma.
+\newblock {M}atrix {C}ompletion has {N}o {S}purious {L}ocal {M}inimum.
+\newblock {\em arXiv preprint arXiv:1605.07272}, 2016.
+
+\bibitem{hardt2016identity}
+Moritz Hardt and Tengyu Ma.
+\newblock {I}dentity {M}atters in {D}eep {L}earning.
+\newblock {\em arXiv preprint arXiv:1611.04231}, 2016.
+
+\end{thebibliography}

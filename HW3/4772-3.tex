@@ -1,0 +1,351 @@
+\documentclass[11pt]{article}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{amsmath,amsbsy,amsfonts,amssymb,amsthm,commath}
+\usepackage[round]{natbib}
+\usepackage{hyperref}
+
+% math font macros
+
+\def\ddefloop#1{\ifx\ddefloop#1\else\ddef{#1}\expandafter\ddefloop\fi}
+% Blackboard fonts: \bbA, \bbB, ...
+\def\ddef#1{\expandafter\def\csname bb#1\endcsname{\ensuremath{\mathbb{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+% Calligraphic fonts: \cA, \cB, ...
+\def\ddef#1{\expandafter\def\csname c#1\endcsname{\ensuremath{\mathcal{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+% Bold fonts (for vectors, matrices, etc.): \vA, \vB, ..., \va, \vb, ...
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\ddefloop
+% Bold fonts (for vectors, matrices, etc.): \valpha, \vbeta, ...,  \vGamma, \vDelta, ...,
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{\csname #1\endcsname}}}}
+\ddefloop {alpha}{beta}{gamma}{delta}{epsilon}{varepsilon}{zeta}{eta}{theta}{vartheta}{iota}{kappa}{lambda}{mu}{nu}{xi}{pi}{varpi}{rho}{varrho}{sigma}{varsigma}{tau}{upsilon}{phi}{varphi}{chi}{psi}{omega}{Gamma}{Delta}{Theta}{Lambda}{Xi}{Pi}{Sigma}{varSigma}{Upsilon}{Phi}{Psi}{Omega}{ell}\ddefloop
+
+% other macros
+
+\newcommand{\wt}{\ensuremath{\widetilde}}
+\renewcommand\v[1]{{\ensuremath{\boldsymbol{#1}}}}
+\renewcommand\t{{\ensuremath{\scriptscriptstyle{\top}}}}
+\newcommand\ip[1]{\langle #1 \rangle} % inner product
+\newcommand{\E}{\ensuremath{\mathbb{E}}} % expectation
+\renewcommand{\P}{\ensuremath{\mathbb{P}}} % probability
+\newcommand{\unitsphere}[1][d-1]{\ensuremath{S^{#1}}} % unit sphere
+
+% environments
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\theoremstyle{definition}
+\newtheorem{problem}{Problem}
+\newenvironment{solution}{\noindent\emph{Solution.}}{\hfill$\square$}
+
+%-------------------------------------------------------------------------------
+
+\title{COMS 4772 Fall 2016 Homework 3 \\ Due Monday, November 21}
+\author{Si Kai Lee sl3950
+  }
+\date{%
+  }
+
+%-------------------------------------------------------------------------------
+
+\begin{document}
+\maketitle
+
+\noindent\textbf{Instructions}:
+\begin{itemize}
+  \item
+    The required number of points for this assignment is $100$.
+    Any points you earn beyond this is extra credit.
+
+  \item
+    The usual homework policies (\url{http://www.cs.columbia.edu/~djhsu/coms4772-f16/about.html}) are, of course, in effect.
+
+  \item
+    Using this \LaTeX\ template will be helpful for grading purposes.
+
+\end{itemize}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{problem}[25 points]
+  Let $\vA$ be a symmetric $n \times n$ matrix with eigenvalues $\lambda_1,
+  \lambda_2, \dotsc, \lambda_n$ and corresponding orthonormal eigenvectors
+  $\vv_1, \vv_2, \dotsc, \vv_n$---ordered so that $|\lambda_1| \geq |\lambda_2|
+  \geq \dotsb \geq |\lambda_n|$.
+  Also let $\wt\vA$ be a symmetric $n \times n$ matrix with $\hat\vv_1 \in
+  \arg\max_{\vv \in \unitsphere[n-1]} \abs[0]{\vv^\t\wt\vA\vv}$.
+  Prove that
+  \begin{equation*}
+    \ip{\hat\vv_1,\vv_1}^2
+    \ \geq \ 1 - \del{2\epsilon/\gamma}^2
+    \,,
+  \end{equation*}
+  where $\gamma := \min_{i \neq 1} \abs{\lambda_1 - \lambda_i}$ and $\epsilon :=
+  \norm[0]{\wt\vA-\vA}_2$.
+  Try to do this from first principles (i.e., do not invoke Davis-Kahan or
+  Wedin's theorem).
+\end{problem}
+
+\begin{solution}
+\\
+We know that $\ip{\hat\vv_1,\vv_1}^2 \leq 1$ as $\ip{\hat\vv_1,\vv_1} \leq 1$. We begin by manipulating $\widetilde{\vA} = \vA + \vH$
+\begin{align*}
+\widetilde{\vA} &= \vA + \vH \\
+\widetilde{\vA}\vv_1 &= \vA\vv_1 + \vH\vv_1\\
+\hat{\vv}_1 \widetilde{\vA}\vv_1 
+&= \lambda_1 \hat{\vv}_1^T \vv_1 + \hat{\vv}_1 \vH\vv_1\\
+&= \lambda_1 \hat{\vv}_1^T \vv_1 + (\vv_1 + \vw_1)\vH\vv_1\\
+&= \lambda_1 \hat{\vv}_1^T \vv_1 + \vv_1\vH\vv_1 + \lambda_{\max}(H)\vw_1^T\vH\vv_1\\
+&= \lambda_1 \hat{\vv}_1^T \vv_1 + \vv_1\vH\vv_1 + \epsilon \vw_1^T\vH\vv_1\\
+&= \lambda_1 \hat{\vv}_1^T \vv_1 + \vv_1\vH\vv_1 + \epsilon \vw_1^T\vv_1\\
+\end{align*}
+Then, we bound $\hat{\vv}_1 \widetilde{\vA}\vv_1$ from above and below
+\begin{align*}
+(\lambda_1 - \min_{i \neq 1}|\lambda_1 - \lambda_i|)\hat{\vv}_1^T \vv_1 + \vv_1\vH\vv_1 + \epsilon \vw_1^T\vv_1 
+&\leq \hat{\vv}_1 \widetilde{\vA}\vv_1 
+\leq \lambda_1 \hat{\vv}_1^T \vv_1 + \vv_1\vH\vv_1 + \epsilon\\
+(\lambda_1 - \gamma)\hat{\vv}_1^T \vv_1 + \vv_1\vH\vv_1 + \epsilon \vw_1^T\vv_1 &\leq \lambda_1 \hat{\vv}_1^T \vv_1 + \vv_1\vH\vv_1 + \epsilon\\
+(\lambda_1 + \gamma)\hat{\vv}_1^T \vv_1 +  \epsilon \vw_1^T\vv_1 &\leq (\lambda_1 + \gamma) \hat{\vv}_1^T \vv_1 + \epsilon\\
+\gamma \hat{\vv}_1^T \vv_1 +  \epsilon \vw_1^T\vv_1 &\leq \gamma \hat{\vv}_1^T \vv_1 + 2\epsilon\\
+\gamma^2 \ip{\hat\vv_1,\vv_1}^2 + 2  \epsilon \vw_1^T\vv_1 +  (\epsilon \vw_1^T\vv_1)^2 &\leq \gamma^2 \ip{\hat\vv_1,\vv_1}^2 + 8\epsilon \ip{\hat\vv_1,\vv_1} + 4\epsilon^2\\
+\gamma^2 \ip{\hat\vv_1,\vv_1}^2 +  (\epsilon \vw_1^T\vv_1)^2 &\leq \gamma^2 \ip{\hat\vv_1,\vv_1}^2 + 4\epsilon^2\\
+\gamma^2 \ip{\hat\vv_1,\vv_1}^2 - 4\epsilon^2 &\leq \gamma^2 \ip{\hat\vv_1,\vv_1}^2\\
+\ip{\hat\vv_1,\vv_1}^2 - \frac{4\epsilon^2}{\gamma^2 } &\leq \ip{\hat\vv_1,\vv_1}^2\\
+1 - (\frac{2\epsilon}{\gamma})^2 &\leq \ip{\hat\vv_1,\vv_1}^2 \textrm{ where } \ip{\hat\vv_1,\vv_1}^2 \approx 1\\
+\end{align*}
+\end{solution}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{problem}[25 points] \
+  Let $\vA$ be the adjacency matrix in $\{0,1\}^{n \times n}$ for a random
+  undirected graph over $n$ vertices, where the edges appear independently, each
+  with probability at most $p$.
+  Use Matrix Bernstein (Theorem~\ref{thm:matrix-bernstein}, below) to prove that
+  with probability at least $0.99$,
+  \begin{equation*}
+    \norm{\vA - \E(\vA)}_2
+    \ \leq \
+    O\del{ \sqrt{pn\log n} + \log n }
+    \,.
+  \end{equation*}
+
+\end{problem}
+
+\begin{solution}
+\\
+We begin by splitting the adjacency matrix $\vA$ into $n$ $n \times n$ symmetric matrices $\vA_1,.., \vA_n$ where $\sum_{i=1}^n \vA_i = \vA$.  Since the edges appear independently with probability at most $p$, we can assume that $\vA$ and its sub-matrices $\vA_1,...,\vA_n $ are also independent. Such a split would also yield $n$ $n \times n$ expected matrices $\E(\vA_1),...,\E(\vA_n)$ and assuming that the expected matrices are unbiased, we have $\E(\vA_i - \E(\vA_i)) = 0$. Lastly, we know that $\lambda_{\max}(\vA_i) \leq 1\ (= R)$ as the maximum value of any entry $\vA_i$ is 1. With the above, we fulfil the conditions needed to satisfy the Matrix Bernstein inequality.
+
+The problem requires the spectral norm of $||\vA - \E(\vA)||_2 = \sqrt{\lambda_{\max}((\vA - \E(\vA))* (\vA - \E(\vA))}$ to be $ \leq O\del{ \sqrt{pn\log n} + \log n }$ with probability 0.99. As $\vA$ contains no complex numbers, its complex conjugate $\vA* = \vA$, $\sqrt{\lambda_{\max}((\vA - \E(\vA))* (\vA - \E(\vA))} = \lambda_{\max} ((\vA - \E(\vA))$. Manipulating the Matrix Bernstein inequality to fit the desired form, we have $\P\del{ \lambda_{\max}\del{\sum_{i=1}^N \vX_i} \leq t } \geq \ d \cdot \exp\del{ -\frac{t}{2(\sigma^2+Rt/3)} }$ and $\P\del{ \lambda_{\max}\del{\sum_{i=1}^N \vX_i} \leq t } = 0.99$, we are left with $ d \cdot \exp\del{ -\frac{t^2}{2(\sigma^2+Rt/3)} } \leq 0.99 $. 
+
+To find $t$, we first need to know $\sigma^2$. The value of each entry $\vA_{ij}$ can be taken to be a Bernoulli random variable which has a variance of $p(1-p) = p - p^2 = \E(\vA_{ij}^2) - \E(\vA_{ij})\E(\vA_{ij})$. As we know that $\E\vA_{ij} = p$, $\E(\vA_{ij}^2) = p$ and $\sigma^2 =  p(n - 1)$.
+
+With that in hand, we work on $0.99  \geq n \cdot \exp\del{ -\frac{t^2}{2(p(n^2 - n) + t/3)} }$. In the processing of deriving $t$, we add and drop multiplicative constants and constants when convenient as the end result would be still be within the bound.
+\begin{align*}
+0.99  &\geq n \cdot \exp\del{ -\frac{t^2}{2p(n-1) + 2t} }\\
+\log 0.99 &\geq \log n - \frac{t^2}{2pn + 2t}\\
+\frac{t^2}{2pn + 2t} &\geq \log n\\
+t^2 - 2t(\log n) - 2pn (\log n ) &\geq 0 \\ 
+(t- (\log n))^2 &\geq pn (\log n ) - (\log n)^2  \\ 
+t &\geq \sqrt{pn (\log n ) - (\log n)^2} + \log n \\
+&\geq \sqrt{pn\log n} + \log n \\
+&= O\del{ \sqrt{pn\log n} + \log n}
+\end{align*} 
+
+\end{solution}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{problem}[10+65=75 points]
+  In a crowdsourcing problem, there are $m$ images that need to be labeled with
+  either $+1$ or $-1$, and there are $n$ workers available to do the labeling.
+  Each worker provides $\{\pm1\}$ labels for all images: the label provided by
+  worker $j$ on image $i$ is $X_{i,j}$.
+  The correct $\{\pm1\}$ label for image $i$ is $Z_i$.
+
+  Assume the following generative process for the correct labels and
+  worker-provided labels.
+  The process is governed by parameters $\vgamma :=
+  (\gamma_1,\gamma_2,\dotsc,\gamma_m) \in \intcc{-1,+1}^m$ and $\vdelta :=
+  (\delta_1,\delta_2,\dotsc,\delta_n) \in \intcc{-1,+1}^n$.
+  The data for images $\{ (X_{i,1},X_{i,2},\dotsc,X_{i,n},Z_i) \}_{i=1}^m$ are
+  independent.
+  For each image $i$,
+  \begin{itemize}
+    \item the distribution of the correct label is given by
+      \begin{equation*}
+        \P(Z_i = +1) \ = \ 1 - \P(Z_i = -1) \ = \ \frac{1+\gamma_i}{2}
+        \,;
+      \end{equation*}
+    \item the worker-provided labels $X_{i,1}, X_{i,2}, \dotsc, X_{i,n}$ are
+      conditionally independent given $Z_i$;
+    \item worker $j$ provides the correct label with probability
+      $\frac{1+\delta_j}{2}$: for each $z \in \{\pm1\}$,
+      \begin{equation*}
+        \P(X_{i,j} = z \mid Z_i = z)
+        \ = \ 1 - \P(X_{i,j} \neq z \mid Z_i = z)
+        \ = \ \frac{1+\delta_j}{2}
+        \,.
+      \end{equation*}
+  \end{itemize}
+
+  Suppose the random matrix $\vX$ (whose $(i,j)$-th entry is $X_{i,j}$) is
+  observed, and the correct labels $\vZ := (Z_1, Z_2, \dotsc, Z_m)$ are hidden.
+  \begin{enumerate}
+    \item[(a)]
+      Write expressions for the largest singular value of $\E(\vX)$ and also for
+      the corresponding (unit length) left and right singular vectors.
+
+    \item[(b)]
+      Assume that $\vgamma \in \{\pm1\}^m$ and $\delta_1 \geq 0.1$.
+      Write a procedure for estimating $\vgamma$ and $\vdelta$ based on the
+      singular value decomposition of $\vX$.
+      Prove bounds on the Euclidean norm errors of your estimates that hold with
+      probability at least $0.99$.
+
+      \emph{Hint}: you may find (some of) the theorems given below to be useful.
+
+  \end{enumerate}
+
+\end{problem}
+
+\begin{solution}
+  \
+  \begin{enumerate}
+    \item[(a)]
+\begin{align*}
+\E X_{ij} 
+&= \P(X_{ij} = 1 | Z_i = 1)\P(Z_i = 1) + \P(X_{ij} = 1 | Z_i = -1)\P(Z_i = -1)\\
+&- \P(X_{ij} = -1 | Z_i = 1)\P(Z_i = 1) - \P(X_{ij} = -1 | Z_i = -1)\P(Z_i = -1)\\
+&= (\frac{1 + \delta_j}{2})(\frac{1 + \gamma_i}{2}) + (\frac{1 - \delta_j}{2})(\frac{1 - \gamma_i}{2}) - (\frac{1 - \delta_j}{2})(\frac{1 + \gamma_i}{2}) - (\frac{1 + \delta_j}{2})(\frac{1 - \gamma_i}{2})\\
+&= (\frac{1 + \delta_j}{2})\gamma_i - (\frac{1 - \delta_j}{2})\gamma_i\\
+&= \gamma_i \delta_j
+\end{align*}
+Hence $\E \vX$ is a matrix containing $\gamma_i \delta_j$s. Taking SVD of $\E X$, we obtain a $m \times m$ matrix U containing a single column of $\frac{\gamma_1}{\sqrt{{\sum_{i=1}^m \gamma_i^2}}}, ..., \frac{\gamma_m}{\sqrt{{\sum_{i=1}^m \gamma_i^2}}}$ with the rest 0s, a $m \times n$ matrix containing only $\sqrt{{\sum_{i=1}^m \gamma_i^2}}\sqrt{{\sum_{i=1}^n \delta_i^2}}$ in the diagonals and a $n \times n$ matrix V containing a single column of $\frac{\delta_1}{\sqrt{{\sum_{i=1}^n \delta_i^2}}}, ..., \frac{\delta_n}{\sqrt{{\sum_{i=1}^n \delta_i^2}}}$ with the rest 0s. As the largest values within $\E X$ is at most 1, $\sigma_1 \leq 1$. $U_1 = \gamma_1, ..., \gamma_m$ and $V_1 = \delta_1, ..., \delta_n$.
+\newpage
+    \item[(b)]
+The algorithm is:
+\begin{enumerate}
+\item Sample the random matrix $\vX$ $N$ times
+\item $\E \hat{\vX} = \frac{1}{N} \sum_{i=1}^{N} \vX_i$ which approaches $\E \vX$ as $N \rightarrow \infty$
+\item Run SVD on $\E \hat{\vX}$ to obtain $\vgamma$ and $\vdelta$
+\item For values in the first column of $\vU$ that are not 1 or -1, round them up to 1 if greater than 0 and vice versa. Set $\vgamma$ as the rounded values of the first column of $\vU$
+\item Divide a diagonal entry in $\Sigma$ by $\sqrt{m}$ and set $\delta$ as the result multiplied with the first column of $\vV$
+\end{enumerate}
+We use the Matrix-Bernstein inequality to bound the errors of $\vU$ and $\vV$ by taking the SVD of each random $\vX$ we draw and set the $\vX_i$ in the inequality to be $\vU - \vU_i$ and $\vV - \vV_i$ respectively. For both cases, we have $\lambda_{\max}(\vX_i) \leq 1$. $\sigma^2_{\vU - \vU_i} \leq Nm$ and $\sigma^2_{\vV - \vV_i} \leq Nn$ as it is reasonable to assume all entries within $\E[\vU - \vU_i]$ and $\E[\vV - \vV_i]$ are smaller than 1. Hence the error bound for $\vgamma$ and $\vdelta$ are $ O\del{\frac{1}{m} (\sqrt{Nm\log m} + \log m)} + O\del{\frac{1}{n}(\sqrt{Nn\log n} + \log n)}$ as we are only estimating the error of a column for each matrix. The derivations are not shown as they are almost identical to question 2.
+  \end{enumerate}
+\end{solution}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\section*{Some theorems}
+
+\begin{theorem}[Matrix Bernstein]
+  \label{thm:matrix-bernstein}
+  Let $\vX_1, \vX_2, \dotsc, \vX_N$ be independent, random symmetric matrices
+  in $\bbR^{d \times d}$.
+  Assume each $\vX_i$ satisfies $\E(\vX_i) = \v0$ and $\lambda_{\max}(\vX_i)
+  \leq R$ almost surely.
+  For all $t \geq 0$,
+  \begin{equation*}
+    \P\del{ \lambda_{\max}\del{\sum_{i=1}^N \vX_i} \geq t }
+    \ \leq \ d \cdot \exp\del{ -\frac{t^2}{2(\sigma^2+Rt/3)} }
+    \quad
+    \text{where}
+    \quad
+    \sigma^2 \ := \ \norm{\sum_{i=1}^N \E\vX_i^2}_2
+    \,.
+  \end{equation*}
+\end{theorem}
+
+\begin{theorem}[Weyl]
+  \label{thm:weyl}
+  For any symmetric $n \times n$ matrices $\vA$ and $\vH$,
+  \[
+    \lambda_i(\vA) + \lambda_n(\vH)
+    \ \leq \ \lambda_i(\vA + \vH) \ \leq \
+    \lambda_i(\vA) + \lambda_1(\vH)
+    \,,
+    \quad 1 \leq i \leq n
+    \,,
+  \]
+  where $\lambda_i(\cdot)$ denotes the $i$-th largest eigenvalue of its
+  argument.
+\end{theorem}
+
+\begin{theorem}[Weyl (again)]
+  \label{thm:weyl2}
+  For any $m \times n$ matrices $\vA$ and $\vE$,
+  \[
+    \abs{\sigma_i(\vA) - \sigma_i(\vA+\vE)}
+    \ \leq \
+    \norm{\vE}_2
+    \,,
+    \quad 1 \leq i \leq \min\{m,n\}
+    \,,
+  \]
+  where $\sigma_i(\cdot)$ denotes the $i$-th largest singular value of its
+  argument.
+\end{theorem}
+
+\begin{theorem}[Davis-Kahan]
+  \label{thm:davis-kahan}
+  Let $\vA = \vE_0 \vA_0 {\vE_0}^\t + \vE_1 \vA_1 {\vE_1}^\t$ and $\vA+\vH =
+  \vF_0 \vLambda_0 {\vF_0}^\t + \vF_1 \vLambda_1 {\vF_1}^\t$ be symmetric
+  matrices with $[\vE_0, \vE_1]$ and $[\vF_0, \vF_1]$ orthogonal.
+  If the eigenvalues of $\vA_0$ are contained in an interval $(a,b)$, and the
+  eigenvalues of $\vLambda_1$ are excluded from the interval
+  $(a-\delta,b+\delta)$ for some $\delta > 0$, then
+  \[
+    \norm{{\vF_1}^\t \vE_0}_2
+    \ \leq \
+    \frac{\norm{{\vF_1}^\t\vH\vE_0}_2}{\delta}
+    \,.
+  \]
+\end{theorem}
+
+\begin{theorem}[Wedin]
+  \label{thm:wedin}
+  Suppose matrices $\vA, \wt\vA \in \bbR^{m \times n}$ may be written as
+  \begin{align*}
+    \vA \ = \ \vU_1 \vS_1 \vV_1^\t + \vU_2 \vS_2 \vV_2^\t \,,
+    \qquad
+    \wt\vA \ = \ \wt\vU_1 \wt\vS_1 \wt\vV_1^\t + \wt\vU_2 \wt\vS_2 \wt\vV_2^\t \,,
+  \end{align*}
+  where $\vU_1^\t \vU_1 = \vV_1^\t \vV_1 = \vI$,
+  $\vU_2^\t \vU_2 = \vV_2^\t \vV_2 = \vI$,
+  $\wt\vU_1^\t \wt\vU_1 = \wt\vV_1^\t \wt\vV_1 = \vI$, and
+  $\wt\vU_2^\t \wt\vU_2 = \wt\vV_2^\t \wt\vV_2 = \vI$;
+  and $\vS_1, \vS_2, \wt\vS_1, \wt\vS_2$ are diagonal and non-negative.
+  If there exists $\alpha > 0$ and $\delta > 0$ such that the smallest singular
+  value in $\vS_1$ is at least $\alpha + \delta$, and the largest singular value
+  in $\wt\vS_2$ is at most $\alpha$, then
+  \begin{equation*}
+    \max\cbr{
+      \norm[1]{\vU_2^\t\tilde\vU_1}_2 ,\,
+      \norm[1]{\vV_2^\t\tilde\vV_1}_2
+    } \ \leq \
+    \frac{\max\cbr{\norm[1]{(\wt\vA-\vA)\vV_1}_2 ,\,
+    \norm[1]{\vU_1^\t(\wt\vA-\vA)}_2}}{\delta}
+    \,.
+  \end{equation*}
+\end{theorem}
+
+%-------------------------------------------------------------------------------
+
+%\begin{thebibliography}{1}
+%  \bibitem[McAllester and Ortiz(2003)]{McAllesterO03}
+%  D.~McAllester and L.~Ortiz.
+%  \newblock Concentration inequalities for the missing mass and for histogram rule error.
+%  \newblock \emph{Journal of Machine Learning Research}, 4(Oct):895--911, 2003.
+%\end{thebibliography}
+
+\end{document}

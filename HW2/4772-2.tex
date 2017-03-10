@@ -1,0 +1,308 @@
+\documentclass[11pt]{article}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{amsmath,amsbsy,amsfonts,amssymb,amsthm,commath}
+\usepackage[round]{natbib}
+\usepackage{hyperref}
+
+% math font macros
+
+\def\ddefloop#1{\ifx\ddefloop#1\else\ddef{#1}\expandafter\ddefloop\fi}
+% Blackboard fonts: \bbA, \bbB, ...
+\def\ddef#1{\expandafter\def\csname bb#1\endcsname{\ensuremath{\mathbb{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+% Calligraphic fonts: \cA, \cB, ...
+\def\ddef#1{\expandafter\def\csname c#1\endcsname{\ensuremath{\mathcal{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+% Bold fonts (for vectors, matrices, etc.): \vA, \vB, ..., \va, \vb, ...
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\ddefloop
+% Bold fonts (for vectors, matrices, etc.): \valpha, \vbeta, ...,  \vGamma, \vDelta, ...,
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{\csname #1\endcsname}}}}
+\ddefloop {alpha}{beta}{gamma}{delta}{epsilon}{varepsilon}{zeta}{eta}{theta}{vartheta}{iota}{kappa}{lambda}{mu}{nu}{xi}{pi}{varpi}{rho}{varrho}{sigma}{varsigma}{tau}{upsilon}{phi}{varphi}{chi}{psi}{omega}{Gamma}{Delta}{Theta}{Lambda}{Xi}{Pi}{Sigma}{varSigma}{Upsilon}{Phi}{Psi}{Omega}{ell}\ddefloop
+
+% other macros
+
+\renewcommand\v[1]{{\ensuremath{\boldsymbol{#1}}}}
+\renewcommand\t{{\ensuremath{\scriptscriptstyle{\top}}}}
+\newcommand\ip[1]{\langle #1 \rangle} % inner product
+\newcommand{\E}{\ensuremath{\mathbb{E}}} % expectation
+\newcommand{\unitsphere}[1][d-1]{\ensuremath{S^{#1}}} % unit sphere
+\newcommand{\Normal}{\ensuremath{\operatorname{N}}} % normal distribution
+\newcommand{\cost}{\ensuremath{\operatorname{cost}}} % cost
+
+% environments
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\theoremstyle{definition}
+\newtheorem{problem}{Problem}
+\newenvironment{solution}{\noindent\emph{Solution.}}{\hfill$\square$}
+
+%-------------------------------------------------------------------------------
+
+\title{COMS 4772 Fall 2016 Homework 2 \\ Due Friday, October 28}
+\author{% TODO put your Full Name and UNI here
+  }
+\date{%
+  }
+
+%-------------------------------------------------------------------------------
+
+\begin{document}
+\maketitle
+
+\noindent\textbf{Instructions}:
+\begin{itemize}
+  \item
+    The usual homework policies (\url{http://www.cs.columbia.edu/~djhsu/coms4772-f16/about.html}) are, of course, in effect.
+
+  \item
+    Using this \LaTeX\ template will be helpful for grading purposes.
+
+\end{itemize}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{problem}[25 points] \
+  Let $\vX$ be a random vector in $\bbR^d$ whose distribution is a mixture of
+  $k$ spherical Gaussians:
+  \begin{equation*}
+    \vX \ \sim \
+    \pi_1 \Normal(\vmu_1,\sigma_1^2\vI) + \pi_2 \Normal(\vmu_2,\sigma_2^2\vI) + \dotsb + \pi_k \Normal(\vmu_k,\sigma_k^2\vI)
+    \,.
+  \end{equation*}
+  For any set $C \subset \bbR^d$, define
+  \begin{equation*}
+    \cost(C) \ := \ \E\sbr{ \min_{\vy \in C} \, \norm{\vX - \vy}_2^2 }
+    \,.
+  \end{equation*}
+  Let $M := \cbr{ \vmu_1, \vmu_2, \dotsc, \vmu_k }$.
+  Prove that if $k < e^{d/2}$, then
+  \begin{equation*}
+    \cost(M) \ \leq \
+    \frac1{1 - \frac{2\ln(k)}{d}}
+    \cdot
+    \min_{\substack{C \subset \bbR^d : \\ |C| \leq k}} \cost(C)
+    \,.
+  \end{equation*}
+\end{problem}
+
+\begin{solution}
+\\
+We start by finding the upper bound of cost($M$):
+\begin{align*}
+\E \sbr{ \min_{\vy \in M} \, \norm{\vX - \vy}_2^2 }
+&= \E \sbr{ \min_{\vy \in M} \, (\vX - \vy)^T (\vX  - \vy)} \\
+&= \E \sbr{ \min_{\vy \in M} \, \vX^T \vX_i - 2 \vX^T y + \vy^T \vy} \\
+&= \E \sbr {\vX^T \vX} - \E \sbr{ \min_{\vy \in M}  -2 \vX^T y + \vy^T \vy} \\
+&= \E \sbr {\vX^T \vX} + \E \sbr{ \max_{\vy \in M}  (2 \vX - \vy)^T \vy} \\
+&= \E \sbr {\vX^T \vX} +  \frac{1}{\lambda} \ln \exp \E \sbr{ \max_{\vy \in M}  \lambda (2 \vX - \vy)^T \vy} \\
+&\leq \E \sbr {\vX^T \vX} +  \frac{1}{\lambda} \ln \E \sbr{ \max_{\vy \in M}  \exp \lambda (2 \vX - \vy)^T \vy} \\
+&\leq \E \sbr {\vX^T \vX} +  \frac{1}{\lambda} \ln \sum_{i=1}^k \E \sbr{ \exp \lambda (2 \vX - \vy)^T \vy_i} \\
+&\leq E \sbr {\vX^T \vX} +  \frac{1}{\lambda} \ln \sum_{i=1}^k \E \sbr{ \exp \lambda (2 \vX_k - \vy)^T \vy_i} \textrm{ where } \vX_k = \max_{\vy \in M} \vy \\
+&\leq E \sbr {\vX^T \vX} +  \frac{1}{\lambda} \ln \sum_{i=1}^k \E \sbr{ \exp \lambda (2 \vX_k^T \vy)} \\
+&\leq E \sbr {\vX^T \vX} +  \frac{1}{\lambda} \ln \sum_{i=1}^k \E \sbr{ \exp 2 \lambda (\vX_k^T \vy)} \\
+&\leq E \sbr {\vX^T \vX} +  \frac{1}{\lambda} \ln \sum_{i=1}^k \exp (\sigma_k \lambda^2) tr(\vy) \\
+\end{align*}
+With $\lambda = \sqrt{\frac{\ln k}{\sigma_k tr(\vy) }}$, $\E \sbr{ \min_{\vy \in M} \, \norm{\vX - \vy}_2^2 } \leq E \sbr {\vX^T \vX} + 2\sqrt{\sigma_k tr(\vy) \ln k}$.
+\\
+The lower bound of the cost($C$) occurs when $\vy = \E[\vX]$ and hence $\E[\vX^T \vX]  - \E[\vX^T]\E[\vX] \leq$ cost($c$).
+\end{solution}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{problem}[25 points]
+  Suppose $\vA, \vB \in \bbR^{n \times d}$ each have rank $d$.
+  Give unambiguous pseudocode for an algorithm that, when given $\vA$ and $\vB$
+  as inputs, finds all solutions $\vv \in \unitsphere$ satisfying
+  \[
+    \exists \lambda \in \bbR \setminus \cbr{0} \ \text{s.t.} \
+    \vA^\t\vA \vv \ = \ \lambda \vB^\t \vB \vv
+    \,.
+  \]
+  If there is an entire subspace of solutions, the algorithm just needs to
+  return an orthonormal basis for this subspace.
+  Your pseudocode can use things like SVD, Gram-Schmidt, etc.~as black-box
+  subroutines.
+  Prove that the algorithm is correct.
+\end{problem}
+
+\begin{solution}
+\newline
+Input: $\vA$, $\vB$
+\\
+Output: All solutions $\vv \in \unitsphere$ satisfying $\exists \lambda \in \bbR \setminus \cbr{0} \ \text{s.t.} \ \vA^\t\vA \vv \ = \ \lambda \vB^\t \vB \vv$
+\\ \\
+Begin
+
+Calculate $\vA^T \vA$
+
+Calculate $\vB^T \vB$
+
+Invert $\vB^T \vB$ and set it as $\vC$
+
+Take the product of $\vC$ and $\vA^T \vA$ and set it as $\vD$
+
+Perform eigendecompoisiton on $\vD$ to obtain $\vD = \vU \vSigma \vU^T$
+
+Normalise and return $\vU$
+\\
+End
+\\ \\
+Steps 1 and 2 will be always be valid for matrices of any size. As $\vB$ is of rank $d$, $\vB^T \vB$ is also of rank $d$ and a $d \times d$ matrix, hence $\vB^T \vB$ is not rank deficient and is invertible so step 3 is valid. Since both $\vC$ and $\vA^T \vA$ are $d \times d$ matrices, their product can be computed which verifies step 4. $\vD$ is a square $d \times d$ matrix of rank $d$, we can perform eigendecomposition to obtain $\vU \vSigma \vU^T$ where $U^T = U^{-1}$. Hence $U$ is orthogonal and forms a basis for the subspace of the solutions. After normalising $U$, we obtain a orthonormal basis for the subspace.
+
+\end{solution}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{problem}[25 points]
+  Let $\vA \in \bbR^{n \times d}$ be a data matrix whose rows are
+  $\va_1, \va_2, \dotsc, \va_n \in \bbR^d$.
+%  (You can assume that they are distinct and span all of $\bbR^d$.)
+  Let $\vD \in \bbR^{n \times n}$ be the matrix whose $(i,j)$-th entry
+  is the squared Euclidean distance $D_{i,j} =
+  \norm{\va_i-\va_j}_2^2$.
+  Suppose you are given the squared Euclidean distance matrix $\vD$ as
+  input, and you are asked to recover the set of original points
+  $\cbr[0]{ \va_1, \va_2, \dotsc, \va_n }$ up to some translation.
+  \emph{You do not have access to the original data matrix $\vA$.}
+  \begin{enumerate}
+    \item[(a)]
+      Let $\vs \in \bbR^n$ be the vector whose $i$-th entry is
+      $\norm{\va_i}_2^2$.
+      Prove that $\vD = \vs\v1_n^\t - 2\vA\vA^\t + \v1_n\vs^\t$, where
+      $\v1_n \in \bbR^n$ is the all-ones vector.
+
+    \item[(b)]
+      Let $\vPi \in \bbR^{n \times n}$ be the orthogonal projector for
+      the $(n{-}1)$-dimensional subspace
+      \begin{equation*}
+        \cbr{ \vx \in \bbR^n : \ip{\v1_n,\vx} = 0 }
+        \,.
+      \end{equation*}
+      Prove that $-(1/2)\vPi\vD\vPi = \vPi\vA\vA^\t\vPi$.
+
+    \item[(c)]
+      Explain how to determine points $\vx_1, \vx_2, \dotsc, \vx_n \in \bbR^d$
+      from $\vD$ such that:
+      \begin{itemize}
+        \item
+          $D_{i,j} = \norm{\vx_i-\vx_j}_2^2$ for all $i,j \in [n]$;
+          and
+
+        \item
+          $\sum_{i=1}^n \vx_i = \v0$.
+
+      \end{itemize}
+      (You may assume that you are told the original dimension $d$.)
+
+    \item[(d)]
+      \emph{Optional}.
+      Suppose the matrix $\vD$ is corrupted (say, because your distance
+      measuring device is imperfect), so the entries no longer correspond to
+      the squared Euclidean distances between the $\va_i$.
+      Explain how to determine points $\vx_1, \vx_2, \dotsc, \vx_n \in \bbR^n$
+      (yes, $n$ and not $d$) from $\vD$ such that:
+      \begin{itemize}
+        \item
+          $\sum_{i=1}^n \vx_i = \v0$;
+        \item
+          $\norm{\vx_i - \vx_j}_2^2 \geq D_{i,j}$ for all $i \neq j$; and
+        \item
+          $\max \cbr{ \frac{ \norm{\vx_i - \vx_j}_2^2 }{D_{i,j}} : 1 \leq i < j \leq n }$ is as small as possible.
+      \end{itemize}
+      \emph{Hint}: use semidefinite programming.
+
+  \end{enumerate}
+\end{problem}
+
+\begin{solution}
+\subsection*{a}
+$\vD_{i,j} = ||\va_i - \va_j||_2^2 = (\va_i - \va_j)^T (\va_i - \va_j) = \va_i^T \va_i - 2 \va_i^T \va_j + \va_j^T \va_j$. We have $\vs = ||\va_i||_2^2 = \va_i^T \va_i$ and so
+\[
+\vs\v1_n^\t = 
+\begin{bmatrix}
+    \va_1^T \va_1 & \va_1^T \va_1 & \va_1^T \va_1 & \dots  & \va_1^T \va_1 \\
+    \va_2^T \va_2 & \va_2^T \va_2 & \va_2^T \va_2 & \dots  & \va_2^T \va_2 \\
+    \vdots & \vdots & \vdots & \ddots & \vdots \\
+    \va_n^T \va_n & \va_n^T \va_n & \va_n^T \va_n & \dots  & \va_n^T \va_n
+\end{bmatrix}
+\] 
+and 
+\[
+\v1_n\vs^\t
+\begin{bmatrix}
+    \va_1^T \va_1 & \va_2^T \va_2 & \va_3^T \va_3 & \dots  & \va_n^T \va_n \\
+    \va_1^T \va_1 & \va_2^T \va_2 & \va_3^T \va_3 & \dots  & \va_n^T \va_n \\
+    \vdots & \vdots & \vdots & \ddots & \vdots \\
+    \va_1^T \va_1 & \va_2^T \va_2 & \va_3^T \va_3 & \dots  & \va_n^T \va_n
+\end{bmatrix}
+\] 
+while 
+\[
+\vA\vA^T=
+\begin{bmatrix}
+    \va_1^T \va_1 & \va_1^T \va_2 & \va_1^T \va_2 & \dots  & \va_1^T \va_n \\
+    \va_2^T \va_1 & \va_2^T \va_2 & \va_2^T \va_3 & \dots  & \va_2^T \va_n \\
+    \vdots & \vdots & \vdots & \ddots & \vdots \\
+    \va_n^T \va_1 & \va_n^T \va_2 & \va_n^T \va_3 & \dots  & \va_n^T \va_n
+\end{bmatrix}
+\]
+The ${i,j}^{th}$ component of $\vs\v1_n^\t - 2 \vA\vA^T + \vs\v1_n^\t = \va_i^T \va_i - 2 \va_i^T \va_j + \va_j^T \va_j = \vD_{i,j}$, hence $\vD = \vs\v1_n^\t - 2\vA\vA^\t + \v1_n\vs^\t$.
+
+\subsection*{b}
+\begin{align*}
+-(1/2)\vPi\vD\vPi
+&= -(1/2)\vPi(\vs\v1_n^\t - 2\vA\vA^\t + \v1_n\vs^\t)\vPi \\
+&= -(1/2) (\vPi\vs\v1_n^\t\vPi - 2\vPi\vA\vA^\t\vPi + \vPi\v1_n\vs^\t \vPi) \textrm{ where } \v1_n^\t\vPi = \vPi 1_n = 0\\
+&= -(1/2) (- 2\vPi\vA\vA^\t\vPi) \\
+&= \vPi\vA\vA^\t\vPi
+\end{align*}
+
+\subsection*{c}
+We know that any vector $\vx$ can be split into components consisting of $\v1_n$ and its orthogonal projection in the form of $\vx = \langle \vx, \v1_n \rangle \v1_n + \vPi \vx$. Next, we rewrite the above in terms of $\vPi \vx$ which is $\vPi \vx = \vx - \langle \vx, \v1_n \rangle \v1_n$. To find out what $\vPi$ is, we express the RHS in terms of $\vx$. $\langle \vx, \v1_n \rangle = \vx^T \v1_n = \sum_{i=1}^n \vx_i$, so $\langle \vx, \v1_n \rangle \v1_n$ is an $n$ dimension vector of $\sum_{i=1}^n \vx_i$. This is also equivalent to the product of a $n \times n$ matrix of 1 ($= \v1_n \v1_n^T$)  and $\vx$. Hence $\vPi \vx = (I - \v1_n \v1_n^T)\vx$ and $\vPi = (I - \v1_n \v1_n^T)$ which is invertible. Using the results in b), $-(1/2)\vPi\vD\vPi =  \vPi\vX\vX^\t\vPi$ where $\vX$ is the concatenation of $\vx_i$s. With SVD, we can break $\vPi\vX\vX^\t\vPi$ into $\vV\vSigma\vV^T =  \vV\vSigma^{1/2}\vSigma^{1/2}\vV^T$ where $\vV\vSigma^{1/2} = \vPi\vX$ and $\vSigma^{1/2}\vV^T = \vX^\t\vPi$. By taking the product of $\vPi^{-1} \vV\vSigma^{1/2} = \vPi^{-1} \vPi\vX$, we recover $\vx_1, .. \vx_n$ in the form of $\vX$.
+
+\end{solution}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{problem}[25 points]
+  Exercise 3.25 from BHK.
+\end{problem}
+
+\begin{solution}
+\subsection*{a}
+\begin{align*}
+\arg \max ||Ax||_2^2
+&= \arg \max x^T A^T A x 
+\end{align*}
+The above is equivalent to solving for the eigenvalues and eigenvectors of $\vA^T \vA$ and choosing the eigenvector $\vv_1$ with the largest eigenvalue $\lambda_1$. The synthetic document is then $\vA\vv_1$.
+\subsection*{b}
+The synthetic document does not represent the centre of gravity which is the document with averaged term counts. Instead, it represents the document with the largest average dot-product with the set of documents represented by the matrix.
+\subsection*{c}
+Perform eigendecomposition on $\vA$ like in a) but choose the $k$ eigenvectors with the largest eigenvalues. Obtain the synthetic documents by calculating the product $\vA$ and $\vv_i$ where $i \in [1, k]$ and are hence the document-term matrix multiplied by singular vectors.
+\subsection*{d}
+Assuming that we can arrange $\vA$ as a block-diagonal matrix, $\vA^T \vA$ (which could also be loosely called the 'term-correlation matrix') would be block-diagonal as well. To see this, the $i,j^{th}$ entry of the matrix is $\langle \va_i^T, \va_j \rangle$ and would only be non-zero when the vectors belong to the same block since each block is characterised by an exclusive set of terms. Breaking the so-called 'term-correlation matrix' into parts via eigendecomposition, $\vA^T \vA$ can be represented as $\vV \vlambda \vV^T$ where $\vV^T = \vV^{-1}$. As each entry of $\vA^T \vA$ can be expressed as $\lambda_i v_{ij} ^2$, the eigenvectors of $\vA^T \vA$ or the right-singular vectors of $\vA$ must also reflect the block-diagonal structure of  $\vA^T \vA$ as we only see a 0 when $v_{ij} = 0$. Hence each right-singular vector can be divided into distinct blocks where the existence of non-zero numbers in the blocks gives rise to the corresponding block in $\vA^T \vA$ if it multiplied by another right-singular vector containing non-zero numbers in the same block. 
+\subsection*{e}
+Pick a $\vv_I$ of the right singular matrix of $\vA^T \vA$ and obtain the $m \times 1$ vector obtained by $\vA \vv_i$. The corresponding documents with non-zero entries in the resulting vector all belong to the same cluster. Repeat till all documents have an assignment.
+\end{solution}
+%\newpage
+
+%-------------------------------------------------------------------------------
+
+%\begin{thebibliography}{1}
+%  \bibitem[McAllester and Ortiz(2003)]{McAllesterO03}
+%  D.~McAllester and L.~Ortiz.
+%  \newblock Concentration inequalities for the missing mass and for histogram rule error.
+%  \newblock \emph{Journal of Machine Learning Research}, 4(Oct):895--911, 2003.
+%\end{thebibliography}
+
+\end{document}
